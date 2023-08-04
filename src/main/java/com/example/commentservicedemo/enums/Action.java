@@ -5,7 +5,6 @@ import lombok.Getter;
 public enum Action {
 
     LIKE("LIKE"),
-    //DISSLIKE
     DISLIKE("DISLIKE");
 
     @Getter
