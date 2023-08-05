@@ -1,5 +1,6 @@
 package com.example.commentservicedemo.controller;
 
+import com.example.commentservicedemo.enums.Action;
 import com.example.commentservicedemo.model.content.ContentRequestModel;
 import com.example.commentservicedemo.service.ContentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,15 @@ public class ContentController {
     public ResponseEntity deleteContent(@RequestParam String contentId) throws Exception {
         try {
             return new ResponseEntity<>(contentService.deleteContent(contentId), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @RequestMapping(value = "/user-action/names", method = RequestMethod.GET)
+    public ResponseEntity getUserActionNames(@RequestParam String contentId, @RequestParam Action action) throws Exception {
+        try {
+            return new ResponseEntity<>(contentService.getUserActionNames(contentId, action), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }

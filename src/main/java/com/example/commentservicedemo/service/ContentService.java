@@ -1,6 +1,8 @@
 package com.example.commentservicedemo.service;
 
 import com.example.commentservicedemo.entities.Content;
+import com.example.commentservicedemo.entities.UserAction;
+import com.example.commentservicedemo.enums.Action;
 import com.example.commentservicedemo.error.CustomException;
 import com.example.commentservicedemo.error.ErrorCode;
 import com.example.commentservicedemo.model.content.ContentRequestModel;
@@ -72,14 +74,28 @@ public class ContentService {
         return Boolean.TRUE;
     }
 
-    public void updateUserActionCount(Integer likeCount, Integer disLikeCount, String commentId) {
-        Content content = contentRepository.findById(commentId).orElse(null);
+    public void updateUserActionCount(Integer likeCount, Integer disLikeCount, String contentId) {
+        Content content = contentRepository.findById(contentId).orElse(null);
         if (Objects.isNull(content)) {
             throw new CustomException(ErrorCode.BAD_REQUEST, UNABLE_TO_FIND_CONTENT);
         }
         content.setLikeCount(content.getLikeCount() + likeCount);
         content.setDisLikeCount(content.getDisLikeCount() + disLikeCount);
         contentRepository.save(content);
+    }
+
+    public String getUserActionNames(String contentId, Action action) {
+        Content content = contentRepository.findById(contentId).orElse(null);
+        if (Objects.isNull(content)) {
+            throw new CustomException(ErrorCode.BAD_REQUEST, UNABLE_TO_FIND_CONTENT);
+        }
+        List<String> userIds = userActionService.getUsersByAction(contentId, action);
+        List<String> userNames = userService.getUsersByIds(userIds);
+        String finalList = "";
+        for (String name : userNames) {
+            finalList = finalList.concat(" ").concat(name);
+        }
+        return finalList.trim();
     }
 
     /*Logic:

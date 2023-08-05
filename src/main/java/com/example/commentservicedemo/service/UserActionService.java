@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static com.example.commentservicedemo.util.Constants.*;
 
@@ -130,4 +131,8 @@ public class UserActionService {
         userActionRepository.deleteAll(userActionList);
     }
 
+    public List<String> getUsersByAction(String contentId, Action action) {
+        List<UserAction> userActionList = userActionRepository.findByContentEntityIdAndAction(contentId, action);
+        return userActionList.stream().map(UserAction::getUserId).collect(Collectors.toList());
+    }
 }

@@ -81,4 +81,10 @@ public class UserService {
         return Boolean.TRUE;
     }
 
+    public List<String> getUsersByIds(List<String> userIds) {
+        List<User> userList = userRepository.findAll();
+        return userList.stream().filter(user -> userIds.contains(user.getId())).map(User::getUserName)
+                .collect(Collectors.toList());
+    }
+
 }
