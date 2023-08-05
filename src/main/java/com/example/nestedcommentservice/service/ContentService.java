@@ -9,11 +9,13 @@ import com.example.nestedcommentservice.model.content.ContentResponseModel;
 import com.example.nestedcommentservice.repository.ContentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.example.nestedcommentservice.util.Constants.*;
 
@@ -67,8 +69,41 @@ public class ContentService {
 
     /*Logic:
     This method gives first n level comments where here n=size */
-    public List<ContentResponseModel> getContent(String parentContentId, Integer page, Integer size) {
-        return null;
+    public Page<ContentResponseModel> getContent(String parentContentId, Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Content> contentPage = contentRepository.findByParentContentId(parentContentId, pageable);
+        Map<String, Integer> childContentCountMap = getChildContentCountMap(contentPage.getContent());
+        List<String> userIds = contentPage.getContent().stream()
+                .map(Content::getUserId)
+                .collect(Collectors.toList());
+        Map<String, String> userNameMap = userService.getUserMap(userIds);
+        return contentPage.map(content -> buildContentResponseModel(content, childContentCountMap, userNameMap));
+    }
+
+    private Map<String, Integer> getChildContentCountMap(List<Content> contentList) {
+        List<String> contentIds = contentList.stream()
+                .map(Content::getId)
+                .collect(Collectors.toList());
+        List<Object[]> childContentCounts = contentRepository.getChildContentCounts(contentIds);
+
+        Map<String, Integer> childContentCountMap = new HashMap<>();
+        for (Object[] obj : childContentCounts) {
+            String parentId = (String) obj[0];
+            Long count = (Long) obj[1];
+            childContentCountMap.put(parentId, count.intValue());
+        }
+        return childContentCountMap;
+    }
+
+    private ContentResponseModel buildContentResponseModel(Content content,
+                                                           Map<String, Integer> childContentCountMap,
+                                                           Map<String, String> userNameMap) {
+        Integer childContentCount = childContentCountMap.getOrDefault(content.getId(), 0);
+        String userName = userNameMap.getOrDefault(content.getUserId(), "Unknown");
+        return ContentResponseModel.builder().contentId(content.getId()).childContentCount(childContentCount)
+                .createdOn(getTimeDifferenceInString(content.getCreatedOn().getTime(), System.currentTimeMillis()))
+                .contentText(content.getContentText()).parentContentId(content.getParentContentId())
+                .contentEntity(content.getContentEntity()).level(content.getLevel()).userName(userName).build();
     }
 
     /*Logic:

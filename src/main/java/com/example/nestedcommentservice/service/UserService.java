@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -85,6 +86,11 @@ public class UserService {
         List<User> userList = userRepository.findAll();
         return userList.stream().filter(user -> userIds.contains(user.getId())).map(User::getUserName)
                 .collect(Collectors.toList());
+    }
+
+    public Map<String, String> getUserMap(List<String> userIds) {
+        List<User> userList = userRepository.findAll();
+        return userList.stream().collect(Collectors.toMap(User::getId, User::getUserName));
     }
 
 }

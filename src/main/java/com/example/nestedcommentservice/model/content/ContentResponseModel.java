@@ -11,9 +11,10 @@ public class ContentResponseModel {
 
     private String contentId;
     private String userId;
+    private String userName;
     private String contentText;
     private Integer level;
-    private Integer childCommentCount;
+    private Integer childContentCount;
     private String parentContentId;
     private ContentEntity contentEntity;
     private String createdOn;

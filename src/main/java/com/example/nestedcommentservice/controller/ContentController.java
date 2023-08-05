@@ -18,7 +18,8 @@ public class ContentController {
 
     @RequestMapping(value = "/fetch", method = RequestMethod.GET)
     public ResponseEntity getContent(@RequestParam @NonNull String parentContentId,
-                                     @RequestParam Integer page, @RequestParam Integer size) throws Exception {
+                                     @RequestParam(defaultValue = "0") Integer page,
+                                     @RequestParam(defaultValue = "5") Integer size) throws Exception {
         try {
             return new ResponseEntity<>(contentService.getContent(parentContentId, page, size), HttpStatus.OK);
         } catch (Exception e) {
