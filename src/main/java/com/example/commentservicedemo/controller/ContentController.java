@@ -1,8 +1,7 @@
 package com.example.commentservicedemo.controller;
 
-import com.example.commentservicedemo.model.comment.CommentRequestModel;
-import com.example.commentservicedemo.model.post.PostRequestModel;
-import com.example.commentservicedemo.service.CommentService;
+import com.example.commentservicedemo.model.content.ContentRequestModel;
+import com.example.commentservicedemo.service.ContentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,25 +11,25 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/comment")
-public class CommentController {
+@RequestMapping("/content")
+public class ContentController {
 
     @Autowired
-    private CommentService commentService;
+    private ContentService contentService;
 
     @RequestMapping(value = "/add", method = RequestMethod.POST, produces = "application/json")
-    public ResponseEntity addComment(@RequestBody CommentRequestModel commentRequestModel) throws Exception {
+    public ResponseEntity addContent(@RequestBody ContentRequestModel contentRequestModel) throws Exception {
         try {
-            return new ResponseEntity<>(commentService.addComment(commentRequestModel), HttpStatus.OK);
+            return new ResponseEntity<>(contentService.addContent(contentRequestModel), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 
     @RequestMapping(value = "/update", method = RequestMethod.PUT, produces = "application/json")
-    public ResponseEntity updateComment(@RequestBody CommentRequestModel commentRequestModel) throws Exception {
+    public ResponseEntity updateContent(@RequestBody ContentRequestModel contentRequestModel) throws Exception {
         try {
-            return new ResponseEntity<>(commentService.updateComment(commentRequestModel), HttpStatus.OK);
+            return new ResponseEntity<>(contentService.updateContent(contentRequestModel), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }

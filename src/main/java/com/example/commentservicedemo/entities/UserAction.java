@@ -1,7 +1,7 @@
 package com.example.commentservicedemo.entities;
 
 import com.example.commentservicedemo.enums.Action;
-import com.example.commentservicedemo.enums.ActionEntity;
+import com.example.commentservicedemo.enums.ContentEntity;
 import lombok.*;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -14,10 +14,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class UserAction extends CommonEntity {
 
     @NonNull
-    private ActionEntity actionEntity;
+    private ContentEntity contentEntity;
 
     @NonNull
-    private String actionEntityId;
+    private String contentEntityId;
 
     @NonNull
     private Action action;
@@ -25,10 +25,10 @@ public class UserAction extends CommonEntity {
     @NonNull
     private String userId;
 
-    public UserAction(@NonNull ActionEntity actionEntity, @NonNull String actionEntityId,
+    public UserAction(@NonNull ContentEntity contentEntity, @NonNull String contentEntityId,
                       @NonNull Action action, @NonNull String userId) {
-        this.actionEntity = actionEntity;
-        this.actionEntityId = actionEntityId;
+        this.contentEntity = contentEntity;
+        this.contentEntityId = contentEntityId;
         this.action = action;
         this.userId = userId;
     }

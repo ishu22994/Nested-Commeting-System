@@ -1,5 +1,6 @@
 package com.example.commentservicedemo.entities;
 
+import com.example.commentservicedemo.enums.ContentEntity;
 import lombok.*;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -7,16 +8,16 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Document(collection = "comment")
+@Document(collection = "content")
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper=false)
-public class Comment extends CommonEntity{
+public class Content extends CommonEntity{
 
     @NonNull
     private String userId;
 
     @NonNull
-    private String postId;
+    private ContentEntity contentEntity;
 
     @Builder.Default
     private Integer likeCount = 0;
@@ -28,9 +29,9 @@ public class Comment extends CommonEntity{
     private Integer level;
 
     @NonNull
-    private String parentCommentId;
+    private String parentContentId;
 
     @NonNull
-    private String commentText;
+    private String contentText;
 
 }

@@ -2,14 +2,12 @@ package com.example.commentservicedemo.service.impl;
 
 import com.example.commentservicedemo.entities.UserAction;
 import com.example.commentservicedemo.enums.Action;
-import com.example.commentservicedemo.enums.ActionEntity;
 import com.example.commentservicedemo.error.CustomException;
 import com.example.commentservicedemo.error.ErrorCode;
 import com.example.commentservicedemo.model.useraction.UserActionRequestModel;
 import com.example.commentservicedemo.model.useraction.UserActionResponseModel;
 import com.example.commentservicedemo.repository.UserActionRepository;
-import com.example.commentservicedemo.service.CommentService;
-import com.example.commentservicedemo.service.PostService;
+import com.example.commentservicedemo.service.ContentService;
 import com.example.commentservicedemo.service.UserActionService;
 import com.example.commentservicedemo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,13 +25,10 @@ public class UserActionServiceImpl implements UserActionService {
     private UserActionRepository userActionRepository;
 
     @Autowired
-    private CommentService commentService;
+    private ContentService contentService;
 
     @Autowired
     private UserService userService;
-
-    @Autowired
-    private PostService postService;
 
     private static Integer likeCount;
     private static Integer disLikeCount;
@@ -41,9 +36,9 @@ public class UserActionServiceImpl implements UserActionService {
     /*logic :
     1. If a person click on like button add +1 count in like.
     2. If a person click on dislike button add +1 count in dislike.
-    3. If a person has like the comment and click on dislike -1 count.
+    3. If a person has like the content and click on dislike -1 count.
     from like and +1 dislike and vice versa : at a time either like or dislike.
-    4. If a person like comment then do +1 like count and again if the same person
+    4. If a person like content then do +1 like count and again if the same person
     clicks on like button -1 the like count and same with dislike also. This deletes the entry
     from user action table */
 
@@ -54,11 +49,11 @@ public class UserActionServiceImpl implements UserActionService {
             Boolean isDeleted = Boolean.FALSE;
             likeCount = 0;
             disLikeCount = 0;
-            UserAction userAction = userActionRepository.findByUserIdAndActionEntityId(userActionRequestModel.getUserId(),
-                    userActionRequestModel.getActionEntityId());
+            UserAction userAction = userActionRepository.findByUserIdAndContentEntityId(userActionRequestModel.getUserId(),
+                    userActionRequestModel.getContentEntityId());
             if (Objects.isNull(userAction)) {
                 getUserActionCount(null, userActionRequestModel.getAction(), likeCount, disLikeCount);
-                userAction = new UserAction(userActionRequestModel.getActionEntity(), userActionRequestModel.getActionEntityId(),
+                userAction = new UserAction(userActionRequestModel.getContentEntity(), userActionRequestModel.getContentEntityId(),
                         userActionRequestModel.getAction(), userActionRequestModel.getUserId());
                 userAction.prePersist();
             } else {
@@ -76,19 +71,15 @@ public class UserActionServiceImpl implements UserActionService {
             }
             updateCount(userActionRequestModel);
             return UserActionResponseModel.builder().action(userActionRequestModel.getAction()).
-                    actionEntity(userActionRequestModel.getActionEntity()).userId(userActionRequestModel.getUserId()).
-                    actionEntityId(userActionRequestModel.getActionEntityId()).build();
+                    contentEntity(userActionRequestModel.getContentEntity()).userId(userActionRequestModel.getUserId()).
+                    actionEntityId(userActionRequestModel.getContentEntityId()).build();
         } catch (Exception e) {
             throw new CustomException(ErrorCode.BAD_REQUEST, e.getMessage());
         }
     }
 
     private void updateCount(UserActionRequestModel userActionRequestModel) {
-        if (ActionEntity.COMMENT.equals(userActionRequestModel.getActionEntity())) {
-            commentService.updateUserActionCount(likeCount, disLikeCount, userActionRequestModel.getActionEntityId());
-        } else if (ActionEntity.POST.equals(userActionRequestModel.getActionEntity())) {
-            postService.updateUserActionCount(likeCount, disLikeCount, userActionRequestModel.getActionEntityId());
-        }
+        contentService.updateUserActionCount(likeCount, disLikeCount, userActionRequestModel.getContentEntityId());
     }
 
     private void getUserActionCount(Action existingAction, Action newAction, Integer likeCount, Integer disLikeCount) {
@@ -117,14 +108,8 @@ public class UserActionServiceImpl implements UserActionService {
         if (!userService.findUser(userActionRequestModel.getUserId())) {
             throw new CustomException(ErrorCode.BAD_REQUEST, UNABLE_TO_FIND_USER);
         }
-        if (ActionEntity.COMMENT.equals(userActionRequestModel.getActionEntity())) {
-            if (!commentService.findComment(userActionRequestModel.getActionEntityId())) {
-                throw new CustomException(ErrorCode.BAD_REQUEST, UNABLE_TO_FIND_COMMENT);
-            }
-        } else if (ActionEntity.POST.equals(userActionRequestModel.getActionEntity())) {
-            if (!postService.findPost(userActionRequestModel.getActionEntityId())) {
-                throw new CustomException(ErrorCode.BAD_REQUEST, UNABLE_TO_FIND_POST);
-            }
+        if (!contentService.findContent(userActionRequestModel.getContentEntityId())) {
+            throw new CustomException(ErrorCode.BAD_REQUEST, UNABLE_TO_FIND_CONTENT);
         }
     }
 

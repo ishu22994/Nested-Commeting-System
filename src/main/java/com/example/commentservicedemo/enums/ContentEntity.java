@@ -2,7 +2,7 @@ package com.example.commentservicedemo.enums;
 
 import lombok.Getter;
 
-public enum ActionEntity {
+public enum ContentEntity {
 
     POST("POST"),
     COMMENT("COMMENT");
@@ -10,7 +10,7 @@ public enum ActionEntity {
     @Getter
     String value;
 
-    ActionEntity(String value) {
+    ContentEntity(String value) {
         this.value = value;
     }
 

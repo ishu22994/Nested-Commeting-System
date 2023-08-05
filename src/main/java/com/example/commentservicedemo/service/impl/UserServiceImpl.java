@@ -48,7 +48,10 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    //ishit think what needs to do with comments ... if user has deleted
+    /*Logic:
+    if user is deleted
+     1. related content also removed 2. related user-action removed but
+     also decrease count of like/dislike */
     @Override
     public Boolean deleteUser(String userId) {
         try {
@@ -56,6 +59,7 @@ public class UserServiceImpl implements UserService {
             if (Objects.isNull(user)) {
                 throw new CustomException(ErrorCode.BAD_REQUEST, UNABLE_TO_FIND_USER);
             }
+            // ishit do here
             userRepository.delete(user);
             return true;
         } catch (Exception e) {

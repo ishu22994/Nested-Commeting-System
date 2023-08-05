@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserActionRepository extends MongoRepository<UserAction, String> {
 
-    UserAction findByUserIdAndActionEntityId(String userId, String actionEntityId);
+    UserAction findByUserIdAndContentEntityId(String userId, String contentEntityId);
 
 }
