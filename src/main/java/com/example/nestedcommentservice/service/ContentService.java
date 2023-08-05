@@ -103,7 +103,8 @@ public class ContentService {
         return ContentResponseModel.builder().contentId(content.getId()).childContentCount(childContentCount)
                 .createdOn(getTimeDifferenceInString(content.getCreatedOn().getTime(), System.currentTimeMillis()))
                 .contentText(content.getContentText()).parentContentId(content.getParentContentId())
-                .contentEntity(content.getContentEntity()).level(content.getLevel()).userName(userName).build();
+                .contentEntity(content.getContentEntity()).level(content.getLevel())
+                .userId(content.getUserId()).userName(userName).build();
     }
 
     /*Logic:
