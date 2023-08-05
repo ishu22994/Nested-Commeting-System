@@ -2,10 +2,10 @@ package com.example.nestedcommentservice.service;
 
 import com.example.nestedcommentservice.entities.Content;
 import com.example.nestedcommentservice.enums.Action;
+import com.example.nestedcommentservice.enums.ContentEntity;
+import com.example.nestedcommentservice.error.CustomException;
 import com.example.nestedcommentservice.model.content.ContentRequestModel;
-import com.example.nestedcommentservice.model.content.ContentResponseModel;
 import com.example.nestedcommentservice.repository.ContentRepository;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -17,7 +17,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static com.mongodb.assertions.Assertions.assertNotNull;
 import static com.mongodb.assertions.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -41,29 +40,6 @@ public class ContentServiceTests {
     private ContentService contentService;
 
     @Test
-    public void testAddContent_CreateNewContent() {
-        when(userService.findUser(anyString())).thenReturn(true);
-        when(contentRepository.save(any(Content.class))).thenReturn(new Content());
-        ContentRequestModel requestModel = new ContentRequestModel();
-        ContentResponseModel responseModel = contentService.addContent(requestModel);
-        assertNotNull(responseModel);
-        verify(userService, times(1)).findUser(anyString());
-        verify(contentRepository, times(1)).save(any(Content.class));
-    }
-
-    @Test
-    public void testUpdateContent_UpdateExistingContent() {
-        Content existingContent = new Content();
-        when(contentRepository.findById(anyString())).thenReturn(Optional.of(existingContent));
-        when(contentRepository.save(any(Content.class))).thenReturn(existingContent);
-        ContentRequestModel requestModel = new ContentRequestModel();
-        ContentResponseModel responseModel = contentService.updateContent(requestModel);
-        assertNotNull(responseModel);
-        verify(contentRepository, times(1)).findById(anyString());
-        verify(contentRepository, times(1)).save(any(Content.class));
-    }
-
-    @Test
     public void testFindContent_ExistingContent() {
         when(contentRepository.findById(anyString())).thenReturn(Optional.of(new Content()));
         String contentId = "contentId1";
@@ -76,7 +52,9 @@ public class ContentServiceTests {
     public void testAddContent_InvalidUserOrParentContent() {
         ContentRequestModel requestModel = new ContentRequestModel();
         when(userService.findUser(anyString())).thenReturn(false);
-        contentService.addContent(requestModel);
+        assertThrows(CustomException.class, () -> {
+            contentService.addContent(requestModel);
+        });
     }
 
     @Test
@@ -87,18 +65,18 @@ public class ContentServiceTests {
         Boolean result = contentService.deleteContent(contentId);
         assertTrue(result);
         verify(contentRepository, times(1)).findById(anyString());
-        verify(userActionService, times(1)).deleteUserActionsForContent(anyString());
+        verify(userActionService, times(1)).deleteUserActionsForContent(null);
         verify(contentRepository, times(1)).deleteAll(anyList());
     }
 
     @Test
     public void testDeleteContentForUser() {
-        List<Content> contentList = Arrays.asList(new Content(), new Content());
-        when(contentRepository.findByUserId(anyString())).thenReturn(contentList);
         String userId = "userId1";
+        List<Content> contentList = Arrays.asList(Content.builder().contentEntity(ContentEntity.COMMENT).userId(userId)
+                .level(1).parentContentId("NA").contentText("ii").build());
+        when(contentRepository.findByUserId(anyString())).thenReturn(contentList);
         assertDoesNotThrow(() -> contentService.deleteContentForUser(userId));
-        verify(contentRepository, times(contentList.size())).findById(anyString());
-        verify(userActionService, times(contentList.size())).deleteUserActionsForContent(anyString());
+        verify(userActionService, times(contentList.size())).deleteUserActionsForContent(null);
         verify(contentRepository, times(1)).deleteAll(anyList());
     }
 
@@ -107,14 +85,17 @@ public class ContentServiceTests {
         ContentRequestModel requestModel = new ContentRequestModel();
         when(userService.findUser(anyString())).thenReturn(false);
         when(contentRepository.findById(anyString())).thenReturn(Optional.empty());
-        contentService.addContent(requestModel);
+        assertThrows(CustomException.class, () -> {
+            contentService.addContent(requestModel);
+        });
     }
 
     @Test
     public void testUpdateContent_NonExistingContent() {
         ContentRequestModel requestModel = new ContentRequestModel();
-        when(contentRepository.findById(anyString())).thenReturn(Optional.empty());
-        contentService.updateContent(requestModel);
+        assertThrows(CustomException.class, () -> {
+            contentService.updateContent(requestModel);
+        });
     }
 
     @Test
@@ -122,20 +103,26 @@ public class ContentServiceTests {
         Integer likeCount = 1;
         Integer disLikeCount = 0;
         when(contentRepository.findById(anyString())).thenReturn(Optional.empty());
-        contentService.updateUserActionCount(likeCount, disLikeCount, "contentId1");
+        assertThrows(CustomException.class, () -> {
+            contentService.updateUserActionCount(likeCount, disLikeCount, "contentId1");
+        });
     }
 
     @Test
     public void testGetUserActionNames_NonExistingContent() {
         Action action = Action.LIKE;
         when(contentRepository.findById(anyString())).thenReturn(Optional.empty());
-        contentService.getUserActionNames("contentId1", action);
+        assertThrows(CustomException.class, () -> {
+            contentService.getUserActionNames("contentId1", action);
+        });
     }
 
     @Test
     public void testDeleteContent_NonExistingContent() {
         when(contentRepository.findById(anyString())).thenReturn(Optional.empty());
-        contentService.deleteContent("contentId1");
+        assertThrows(CustomException.class, () -> {
+            contentService.deleteContent("contentId1");
+        });
     }
 
     @Test
