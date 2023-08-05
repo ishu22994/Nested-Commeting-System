@@ -13,4 +13,6 @@ public interface ContentService {
 
     void updateUserActionCount(Integer likeCount, Integer disLikeCount, String commentId);
 
+    Boolean deleteContent(String contentId);
+
 }

@@ -82,6 +82,24 @@ public class ContentServiceImpl implements ContentService {
         contentRepository.save(content);
     }
 
+    /*Logic:
+    if content is deleted
+     1. related child content also removed 2. related user-action removed */
+    @Override
+    public Boolean deleteContent(String contentId) {
+        try {
+            Content content = contentRepository.findById(contentId).orElse(null);
+            if (Objects.isNull(content)) {
+                throw new CustomException(ErrorCode.NOT_FOUND, UNABLE_TO_FIND_CONTENT);
+            }
+            // ishit do here
+            contentRepository.delete(content);
+            return true;
+        } catch (Exception e) {
+            throw new CustomException(ErrorCode.BAD_REQUEST, e.getMessage());
+        }
+    }
+
     private Content buildContent(ContentRequestModel contentRequestModel, Boolean isUpdate, Content currentContent) {
         Content content = new Content();
         content.setContentText(contentRequestModel.getContentText());

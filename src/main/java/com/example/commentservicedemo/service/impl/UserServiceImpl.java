@@ -57,13 +57,13 @@ public class UserServiceImpl implements UserService {
         try {
             User user = userRepository.findById(userId).orElse(null);
             if (Objects.isNull(user)) {
-                throw new CustomException(ErrorCode.BAD_REQUEST, UNABLE_TO_FIND_USER);
+                throw new CustomException(ErrorCode.NOT_FOUND, UNABLE_TO_FIND_USER);
             }
             // ishit do here
             userRepository.delete(user);
             return true;
         } catch (Exception e) {
-            throw new CustomException(ErrorCode.NOT_FOUND, UNABLE_TO_DELETE_USER);
+            throw new CustomException(ErrorCode.BAD_REQUEST, e.getMessage());
         }
     }
 
