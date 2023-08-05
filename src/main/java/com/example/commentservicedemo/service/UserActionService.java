@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 import static com.example.commentservicedemo.util.Constants.*;
@@ -81,7 +82,7 @@ public class UserActionService {
     private void getUserActionCount(Action existingAction, Action newAction, Integer likeCount, Integer disLikeCount) {
         if (Objects.isNull(existingAction)) {
             if (Action.DISLIKE.equals(newAction)) {
-               UserActionService.disLikeCount = disLikeCount + 1;
+                UserActionService.disLikeCount = disLikeCount + 1;
             } else if (Action.LIKE.equals(newAction)) {
                 UserActionService.likeCount = likeCount + 1;
             }
@@ -107,6 +108,16 @@ public class UserActionService {
         if (!contentService.findContent(userActionRequestModel.getContentEntityId())) {
             throw new CustomException(ErrorCode.BAD_REQUEST, UNABLE_TO_FIND_CONTENT);
         }
+    }
+
+    public void deleteUserActionsForContent(String contentEntityId) {
+        List<UserAction> userActionList = userActionRepository.findByContentEntityId(contentEntityId);
+        userActionRepository.deleteAll(userActionList);
+    }
+
+    public void deleteUserActionsForUser(String userId) {
+        List<UserAction> userActionList = userActionRepository.findByUserId(userId);
+        userActionRepository.deleteAll(userActionList);
     }
 
 }

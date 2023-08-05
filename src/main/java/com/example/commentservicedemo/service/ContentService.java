@@ -7,9 +7,12 @@ import com.example.commentservicedemo.model.content.ContentRequestModel;
 import com.example.commentservicedemo.model.content.ContentResponseModel;
 import com.example.commentservicedemo.repository.ContentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 import static com.example.commentservicedemo.util.Constants.*;
@@ -22,6 +25,10 @@ public class ContentService {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    @Lazy
+    private UserActionService userActionService;
 
     public ContentResponseModel addContent(ContentRequestModel contentRequestModel) {
         try {
@@ -85,8 +92,12 @@ public class ContentService {
             if (Objects.isNull(content)) {
                 throw new CustomException(ErrorCode.NOT_FOUND, UNABLE_TO_FIND_CONTENT);
             }
-            // ishit do here
-            contentRepository.delete(content);
+            List<Content> childContents = contentRepository.findByParentContentId(content.getId());
+            childContents.add(content);
+            for (Content childContent : childContents) {
+                userActionService.deleteUserActionsForContent(childContent.getId());
+            }
+            contentRepository.deleteAll(childContents);
             return true;
         } catch (Exception e) {
             throw new CustomException(ErrorCode.BAD_REQUEST, e.getMessage());
