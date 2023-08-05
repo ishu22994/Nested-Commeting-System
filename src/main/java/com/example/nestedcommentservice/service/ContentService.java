@@ -65,6 +65,19 @@ public class ContentService {
         }
     }
 
+    /*Logic:
+    This method gives first n level comments where here n=size */
+    public List<ContentResponseModel> getContent(String parentContentId, Integer page, Integer size) {
+        return null;
+    }
+
+    /*Logic:
+    This method gives first n level comments where here n=size and also
+     up to l level horizontal comments for each first n vertical level comments */
+    public List<ContentResponseModel> getHierarchyContent(String parentContentId, Integer level, Integer page, Integer size) {
+        return null;
+    }
+
     public Boolean findContent(String contentId) {
         Content content = contentRepository.findById(contentId).orElse(null);
         if (Objects.isNull(content)) {
