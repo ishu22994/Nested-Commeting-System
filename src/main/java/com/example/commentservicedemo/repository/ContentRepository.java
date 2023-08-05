@@ -11,4 +11,6 @@ public interface ContentRepository extends MongoRepository<Content, String> {
 
     List<Content> findByParentContentId(String id);
 
+    List<Content> findByUserId(String userId);
+
 }

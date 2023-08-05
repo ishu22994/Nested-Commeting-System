@@ -117,6 +117,16 @@ public class UserActionService {
 
     public void deleteUserActionsForUser(String userId) {
         List<UserAction> userActionList = userActionRepository.findByUserId(userId);
+        for (UserAction userAction : userActionList) {
+            if (Action.LIKE.equals(userAction.getAction())) {
+                likeCount = -1;
+                disLikeCount = 0;
+            } else if (Action.DISLIKE.equals(userAction.getAction())) {
+                likeCount = 0;
+                disLikeCount = -1;
+            }
+            contentService.updateUserActionCount(likeCount, disLikeCount, userAction.getContentEntityId());
+        }
         userActionRepository.deleteAll(userActionList);
     }
 

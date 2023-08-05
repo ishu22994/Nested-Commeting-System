@@ -7,6 +7,7 @@ import com.example.commentservicedemo.model.user.UserRequestModel;
 import com.example.commentservicedemo.model.user.UserResponseModel;
 import com.example.commentservicedemo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,6 +21,14 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    @Lazy
+    private UserActionService userActionService;
+
+    @Autowired
+    @Lazy
+    private ContentService contentService;
 
     public UserResponseModel addUser(UserRequestModel userRequestModel) {
         try {
@@ -55,7 +64,8 @@ public class UserService {
             if (Objects.isNull(user)) {
                 throw new CustomException(ErrorCode.NOT_FOUND, UNABLE_TO_FIND_USER);
             }
-            // ishit do here
+            contentService.deleteContentForUser(userId);
+            userActionService.deleteUserActionsForUser(userId);
             userRepository.delete(user);
             return true;
         } catch (Exception e) {

@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -89,18 +88,29 @@ public class ContentService {
     public Boolean deleteContent(String contentId) {
         try {
             Content content = contentRepository.findById(contentId).orElse(null);
-            if (Objects.isNull(content)) {
-                throw new CustomException(ErrorCode.NOT_FOUND, UNABLE_TO_FIND_CONTENT);
-            }
-            List<Content> childContents = contentRepository.findByParentContentId(content.getId());
-            childContents.add(content);
-            for (Content childContent : childContents) {
-                userActionService.deleteUserActionsForContent(childContent.getId());
-            }
-            contentRepository.deleteAll(childContents);
+            deleteFetchedContent(content);
             return true;
         } catch (Exception e) {
             throw new CustomException(ErrorCode.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    private void deleteFetchedContent(Content content) {
+        if (Objects.isNull(content)) {
+            throw new CustomException(ErrorCode.NOT_FOUND, UNABLE_TO_FIND_CONTENT);
+        }
+        List<Content> childContents = contentRepository.findByParentContentId(content.getId());
+        childContents.add(content);
+        for (Content childContent : childContents) {
+            userActionService.deleteUserActionsForContent(childContent.getId());
+        }
+        contentRepository.deleteAll(childContents);
+    }
+
+    public void deleteContentForUser(String userId) throws Exception {
+        List<Content> contentList = contentRepository.findByUserId(userId);
+        for(Content content : contentList){
+            deleteFetchedContent(content);
         }
     }
 
