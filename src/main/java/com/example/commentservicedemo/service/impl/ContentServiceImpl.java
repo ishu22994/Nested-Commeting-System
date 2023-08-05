@@ -34,6 +34,7 @@ public class ContentServiceImpl implements ContentService {
             return ContentResponseModel.builder().contentId(content.getId())
                     .createdOn(getTimeDifferenceInString(content.getCreatedOn().getTime(), System.currentTimeMillis()))
                     .contentText(content.getContentText()).parentContentId(content.getParentContentId())
+                    .contentEntity(content.getContentEntity())
                     .level(content.getLevel()).userId(content.getUserId()).build();
         } catch (Exception e) {
             throw new CustomException(ErrorCode.BAD_REQUEST, e.getMessage());
@@ -54,6 +55,7 @@ public class ContentServiceImpl implements ContentService {
                     .createdOn(getTimeDifferenceInString(updatedContent.getCreatedOn().getTime(), System.currentTimeMillis()))
                     .lastUpdatedOn(getTimeDifferenceInString(updatedContent.getLastUpdatedOn().getTime(), System.currentTimeMillis()))
                     .contentText(updatedContent.getContentText()).parentContentId(updatedContent.getParentContentId())
+                    .contentEntity(contentRequestModel.getContentEntity())
                     .level(updatedContent.getLevel()).userId(updatedContent.getUserId()).build();
         } catch (Exception e) {
             throw new CustomException(ErrorCode.BAD_REQUEST, e.getMessage());
@@ -84,6 +86,7 @@ public class ContentServiceImpl implements ContentService {
         Content content = new Content();
         content.setContentText(contentRequestModel.getContentText());
         content.setUserId(contentRequestModel.getUserId());
+        content.setContentEntity(contentRequestModel.getContentEntity());
         content.setParentContentId(contentRequestModel.getParentContentId());
         content.setLevel(contentRequestModel.getLevel());
         if (Boolean.TRUE.equals(isUpdate)) {
