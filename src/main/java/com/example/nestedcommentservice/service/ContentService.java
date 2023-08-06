@@ -12,6 +12,10 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.CriteriaDefinition;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -82,14 +86,7 @@ public class ContentService {
         List<String> contentIds = contentList.stream()
                 .map(Content::getId)
                 .collect(Collectors.toList());
-        List<Object[]> childContentCounts = contentRepository.getChildContentCounts(contentIds);
-        Map<String, Integer> childContentCountMap = new HashMap<>();
-        for (Object[] obj : childContentCounts) {
-            String parentId = (String) obj[0];
-            Long count = (Long) obj[1];
-            childContentCountMap.put(parentId, count.intValue());
-        }
-        return childContentCountMap;
+        return contentRepository.getChildContentCounts(contentIds);
     }
 
     private ContentResponseModel buildContentResponseModel(Content content,

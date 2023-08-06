@@ -5,12 +5,15 @@ import com.example.nestedcommentservice.repository.ContentRepositoryCustom;
 import org.bson.Document;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.*;
-import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Repository;
 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
+import static org.springframework.data.mongodb.core.query.Criteria.where;
 
 @Repository
 public class ContentRepositoryImpl implements ContentRepositoryCustom {
@@ -22,14 +25,20 @@ public class ContentRepositoryImpl implements ContentRepositoryCustom {
     }
 
     @Override
-    public List<Object[]> getChildContentCounts(List<String> parentContentIds) {
+    public Map<String, Integer> getChildContentCounts(List<String> parentContentIds) {
         Aggregation aggregation = newAggregation(
-                match(Criteria.where("parentContentId").in(parentContentIds)),
+                match(where("parentContentId").in(parentContentIds)),
                 group("parentContentId").count().as("childCount")
         );
-        aggregation = aggregation.withOptions(AggregationOptions.builder().explain(true).build());
-        AggregationResults<Object[]> result = mongoTemplate.aggregate(aggregation, "content", Object[].class);
-        return result.getMappedResults();
+        AggregationResults<Object> result = mongoTemplate.aggregate(aggregation, Content.class, Object.class);
+        Map<String, Integer> childContentCountMap = new HashMap<>();
+        for (Object obj : result.getMappedResults()) {
+            LinkedHashMap linkedHashMap = (LinkedHashMap) obj;
+            String parentId = (String) linkedHashMap.get("_id");
+            Integer count = (Integer) linkedHashMap.get("childCount");
+            childContentCountMap.put(parentId, count);
+        }
+        return childContentCountMap;
     }
 
     @Override
@@ -37,7 +46,7 @@ public class ContentRepositoryImpl implements ContentRepositoryCustom {
         LimitOperation limitOperation = Aggregation.limit(Size);
         SkipOperation skipOperation = Aggregation.skip((long) page * Size);
         TypedAggregation<Content> agg = Aggregation.newAggregation(Content.class,
-                match(Criteria.where("_id").is(contentId)),
+                match(where("_id").is(contentId)),
                 Aggregation.graphLookup("content")
                         .startWith("$_id")
                         .connectFrom("parentContentId")
