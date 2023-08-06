@@ -73,9 +73,7 @@ public class ContentService {
         Pageable pageable = PageRequest.of(page, size);
         Page<Content> contentPage = contentRepository.findByParentContentId(parentContentId, pageable);
         Map<String, Integer> childContentCountMap = getChildContentCountMap(contentPage.getContent());
-        List<String> userIds = contentPage.getContent().stream()
-                .map(Content::getUserId)
-                .collect(Collectors.toList());
+        List<String> userIds = contentPage.getContent().stream().map(Content::getUserId).collect(Collectors.toList());
         Map<String, String> userNameMap = userService.getUserMap(userIds);
         return contentPage.map(content -> buildContentResponseModel(content, childContentCountMap, userNameMap));
     }
