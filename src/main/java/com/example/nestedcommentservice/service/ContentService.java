@@ -21,6 +21,10 @@ import java.util.stream.Collectors;
 
 import static com.example.nestedcommentservice.util.Constants.*;
 
+/**
+ * ContentService - This is the service class to write business logic for content APIs *
+ */
+
 @Service
 @Slf4j
 public class ContentService {
@@ -116,8 +120,8 @@ public class ContentService {
         return ContentResponseModel.builder().contentId(content.getId()).childContentCount(childContentCount)
                 .createdOn(getTimeDifferenceInString(content.getCreatedOn().getTime(), System.currentTimeMillis()))
                 .contentText(content.getContentText()).parentContentId(content.getParentContentId())
-                .contentType(content.getContentType()).level(content.getLevel())
-                .userId(content.getUserId()).userName(userName).build();
+                .contentType(content.getContentType()).level(content.getLevel()).likeCount(content.getLikeCount())
+                .disLikeCount(content.getDisLikeCount()).userId(content.getUserId()).userName(userName).build();
     }
 
     /**
@@ -199,16 +203,24 @@ public class ContentService {
         }
     }
 
+    /**
+     * deleting content and its child contents provided by content *
+     * @param content
+     */
     private void deleteFetchedContent(Content content) {
         if (Objects.isNull(content)) {
             throw new CustomException(ErrorCode.NOT_FOUND, UNABLE_TO_FIND_CONTENT);
         }
+        deleteRecursive(content);
+    }
+
+    private void deleteRecursive(Content content) {
         List<Content> childContents = contentRepository.findByParentContentId(content.getId());
-        childContents.add(content);
         for (Content childContent : childContents) {
+            deleteRecursive(childContent);
             userActionService.deleteUserActionsForContent(childContent.getId());
         }
-        contentRepository.deleteAll(childContents);
+        contentRepository.delete(content);
     }
 
     /**

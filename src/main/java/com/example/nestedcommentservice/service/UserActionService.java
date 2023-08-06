@@ -19,6 +19,10 @@ import java.util.stream.Collectors;
 
 import static com.example.nestedcommentservice.util.Constants.*;
 
+/**
+ * UserActionService - This is the service class to write business logic for user-action APIs *
+ */
+
 @Service
 @Slf4j
 public class UserActionService {

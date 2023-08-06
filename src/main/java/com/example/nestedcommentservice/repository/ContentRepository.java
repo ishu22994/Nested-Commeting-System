@@ -17,4 +17,6 @@ public interface ContentRepository extends MongoRepository<Content, String>, Con
 
     Page<Content> findByParentContentId(String parentContentId, Pageable pageable);
 
+    List<Content> findByParentContentIdIn(List<String> contentIds);
+
 }

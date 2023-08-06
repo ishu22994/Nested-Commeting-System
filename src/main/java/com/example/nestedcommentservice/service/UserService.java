@@ -74,16 +74,11 @@ public class UserService {
         }
     }
 
-    /*Logic:
-    if user is deleted
-     1. related content also removed 2. related user-action removed but
-     also decrease count of like/dislike */
-
     /**
      * This method delete the user
      * if user is deleted
-     *      1. related content also removed 2. related user-action removed but
-     *      also decrease count of like/dislike *
+     *      1. related content also removed 2. related independent user-action removed but
+     *      also decrease count of like/dislike for content*
      * @param userId
      * @return
      */

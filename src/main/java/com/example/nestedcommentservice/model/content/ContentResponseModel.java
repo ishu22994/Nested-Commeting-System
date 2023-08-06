@@ -19,5 +19,7 @@ public class ContentResponseModel {
     private ContentType contentType;
     private String createdOn;
     private String lastUpdatedOn;
+    private Integer likeCount;
+    private Integer disLikeCount;
 
 }
