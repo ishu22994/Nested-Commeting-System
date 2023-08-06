@@ -29,7 +29,8 @@ public class ContentController {
 
     @RequestMapping(value = "/fetch/hierarchy", method = RequestMethod.GET)
     public ResponseEntity getHierarchyContent(@RequestParam @NonNull String parentContentId, @RequestParam @NonNull Integer level,
-                                     @RequestParam Integer page, @RequestParam Integer size) throws Exception {
+                                              @RequestParam(defaultValue = "0") Integer page,
+                                              @RequestParam(defaultValue = "5") Integer size) throws Exception {
         try {
             return new ResponseEntity<>(contentService.getHierarchyContent(parentContentId, level, page, size), HttpStatus.OK);
         } catch (Exception e) {
