@@ -3,7 +3,6 @@ package com.example.nestedcommentservice.repository.impl;
 import com.example.nestedcommentservice.entities.Content;
 import com.example.nestedcommentservice.repository.ContentRepositoryCustom;
 import lombok.extern.slf4j.Slf4j;
-import org.bson.Document;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.*;
 import org.springframework.stereotype.Repository;
@@ -42,24 +41,6 @@ public class ContentRepositoryImpl implements ContentRepositoryCustom {
             childContentCountMap.put(parentId, count);
         }
         return childContentCountMap;
-    }
-
-    @Override
-    public List<Object> findContentHierarchy(String contentId, Integer level, Integer page, Integer Size) {
-        LimitOperation limitOperation = Aggregation.limit(Size);
-        SkipOperation skipOperation = Aggregation.skip((long) page * Size);
-        TypedAggregation<Content> agg = Aggregation.newAggregation(Content.class,
-                match(where("_id").is(contentId)),
-                Aggregation.graphLookup("content")
-                        .startWith("$_id")
-                        .connectFrom("parentContentId")
-                        .connectTo("parentContentId")
-                        .depthField("depth")
-                        .maxDepth(level)
-                        .as("contentHierarchy"), skipOperation, limitOperation);
-        AggregationResults<Document> result = mongoTemplate.aggregate(agg, Document.class);
-        Document object = result.getUniqueMappedResult();
-        return (List<Object>) object.get("contentHierarchy");
     }
 
 }
