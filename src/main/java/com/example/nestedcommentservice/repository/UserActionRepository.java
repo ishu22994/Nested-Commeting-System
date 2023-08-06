@@ -10,12 +10,12 @@ import java.util.List;
 @Repository
 public interface UserActionRepository extends MongoRepository<UserAction, String> {
 
-    UserAction findByUserIdAndContentEntityId(String userId, String contentEntityId);
+    UserAction findByUserIdAndContentId(String userId, String contentId);
 
-    List<UserAction> findByContentEntityId(String contentEntityId);
+    List<UserAction> findByContentId(String contentId);
 
     List<UserAction> findByUserId(String userId);
 
-    List<UserAction> findByContentEntityIdAndAction(String contentId, Action action);
+    List<UserAction> findByContentIdAndAction(String contentId, Action action);
 
 }

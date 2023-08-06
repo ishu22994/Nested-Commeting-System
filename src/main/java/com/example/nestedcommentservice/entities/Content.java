@@ -2,7 +2,12 @@ package com.example.nestedcommentservice.entities;
 
 import com.example.nestedcommentservice.enums.ContentType;
 import lombok.*;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+/**
+ * Content - This is the entity class for content - content can be post / comment based on contentType *
+ */
 
 @Builder
 @AllArgsConstructor
@@ -12,6 +17,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper=false)
 public class Content extends CommonEntity{
+
+    @Id
+    private String id;
 
     @NonNull
     private String userId;

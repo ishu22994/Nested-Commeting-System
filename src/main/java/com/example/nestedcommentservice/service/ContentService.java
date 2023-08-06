@@ -8,15 +8,12 @@ import com.example.nestedcommentservice.error.ErrorCode;
 import com.example.nestedcommentservice.model.content.ContentRequestModel;
 import com.example.nestedcommentservice.model.content.ContentResponseModel;
 import com.example.nestedcommentservice.repository.ContentRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.AggregationResults;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.CriteriaDefinition;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -25,6 +22,7 @@ import java.util.stream.Collectors;
 import static com.example.nestedcommentservice.util.Constants.*;
 
 @Service
+@Slf4j
 public class ContentService {
 
     @Autowired
@@ -37,7 +35,13 @@ public class ContentService {
     @Lazy
     private UserActionService userActionService;
 
+    /**
+     * This method is used to add content*
+     * @param contentRequestModel
+     * @return
+     */
     public ContentResponseModel addContent(ContentRequestModel contentRequestModel) {
+        log.info("adding a content for contentRequestModel {} ", contentRequestModel);
         try {
             checkValidation(contentRequestModel);
             Content content = buildContent(contentRequestModel, Boolean.FALSE, null);
@@ -48,11 +52,18 @@ public class ContentService {
                     .contentType(content.getContentType())
                     .level(content.getLevel()).userId(content.getUserId()).build();
         } catch (Exception e) {
+            log.info("error while adding a content for contentRequestModel {} ", contentRequestModel);
             throw new CustomException(ErrorCode.BAD_REQUEST, e.getMessage());
         }
     }
 
+    /**
+     * This method is used to update content*
+     * @param contentRequestModel
+     * @return
+     */
     public ContentResponseModel updateContent(ContentRequestModel contentRequestModel) {
+        log.info("updating a content for contentRequestModel {} ", contentRequestModel);
         try {
             checkValidation(contentRequestModel);
             Content currentContent = contentRepository.findById(contentRequestModel.getContentId()).orElse(null);
@@ -68,18 +79,25 @@ public class ContentService {
                     .contentType(contentRequestModel.getContentType())
                     .level(updatedContent.getLevel()).userId(updatedContent.getUserId()).build();
         } catch (Exception e) {
+            log.info("error while updating a content for contentRequestModel {} ", contentRequestModel);
             throw new CustomException(ErrorCode.BAD_REQUEST, e.getMessage());
         }
     }
 
-    /*Logic:
-    This method gives first n level comments where here n=size */
+    /**
+     * This method gives first N level comments using pagination where here N=size *
+     * @param parentContentId
+     * @param page
+     * @param size
+     * @return
+     */
     public Page<ContentResponseModel> getContent(String parentContentId, Integer page, Integer size) {
+        log.info("get content for first N level content for parentContentId {}, page {}, size {}",
+                parentContentId, page, size);
         Pageable pageable = PageRequest.of(page, size);
         Page<Content> contentPage = contentRepository.findByParentContentId(parentContentId, pageable);
         Map<String, Integer> childContentCountMap = getChildContentCountMap(contentPage.getContent());
-        List<String> userIds = contentPage.getContent().stream().map(Content::getUserId).collect(Collectors.toList());
-        Map<String, String> userNameMap = userService.getUserMap(userIds);
+        Map<String, String> userNameMap = userService.getUserMap();
         return contentPage.map(content -> buildContentResponseModel(content, childContentCountMap, userNameMap));
     }
 
@@ -102,15 +120,13 @@ public class ContentService {
                 .userId(content.getUserId()).userName(userName).build();
     }
 
-    /*Logic:
-    This method gives first n level comments where here n=size and also
-     up to l level horizontal comments for each first n vertical level comments */
-    public List<ContentResponseModel> getHierarchyContent(String parentContentId, Integer level, Integer page, Integer size) {
-        List<Object> objectList = contentRepository.findContentHierarchy(parentContentId, level, page, size);
-        return null;
-    }
-
+    /**
+     * This method is used to find content from contentId *
+     * @param contentId
+     * @return
+     */
     public Boolean findContent(String contentId) {
+        log.info("finding a content for contentId {} ", contentId);
         Content content = contentRepository.findById(contentId).orElse(null);
         if (Objects.isNull(content)) {
             return Boolean.FALSE;
@@ -118,9 +134,17 @@ public class ContentService {
         return Boolean.TRUE;
     }
 
+    /**
+     * This method is used to update the like/dislike counts*
+     * @param likeCount
+     * @param disLikeCount
+     * @param contentId
+     */
     public void updateUserActionCount(Integer likeCount, Integer disLikeCount, String contentId) {
+        log.info("updating user-action count for contentId {}", contentId);
         Content content = contentRepository.findById(contentId).orElse(null);
         if (Objects.isNull(content)) {
+            log.error("error in updating user-action count for contentId {}", contentId);
             throw new CustomException(ErrorCode.BAD_REQUEST, UNABLE_TO_FIND_CONTENT);
         }
         content.setLikeCount(content.getLikeCount() + likeCount);
@@ -128,9 +152,17 @@ public class ContentService {
         contentRepository.save(content);
     }
 
+    /**
+     * This method is used to get userNames for given contentId who like/dislike*
+     * @param contentId
+     * @param action
+     * @return
+     */
     public String getUserActionNames(String contentId, Action action) {
+        log.info("get user names for contentId {}, action {}", contentId, action);
         Content content = contentRepository.findById(contentId).orElse(null);
         if (Objects.isNull(content)) {
+            log.info("error in getting user names for contentId {}, action {}", contentId, action);
             throw new CustomException(ErrorCode.BAD_REQUEST, UNABLE_TO_FIND_CONTENT);
         }
         List<String> userIds = userActionService.getUsersByAction(contentId, action);
@@ -142,10 +174,17 @@ public class ContentService {
         return finalList.trim();
     }
 
-    /*Logic:
-    if content is deleted
-     1. related child content also removed 2. related user-action removed */
+    /**
+     * This method is for delete content for contentId*
+     *
+     * if content is deleted
+     *     1. related child content also removed 2. related user-action removed
+     * @param contentId
+     * @param userId
+     * @return
+     */
     public Boolean deleteContent(String contentId, String userId) {
+        log.info("delete content for contentId {}, userId {}", contentId, userId);
         try {
             Content content = contentRepository.findById(contentId).orElse(null);
             User user = userService.findUser(userId);
@@ -155,6 +194,7 @@ public class ContentService {
             deleteFetchedContent(content);
             return true;
         } catch (Exception e) {
+            log.info("error in deleting content for contentId {}, userId {}", contentId, userId);
             throw new CustomException(ErrorCode.BAD_REQUEST, e.getMessage());
         }
     }
@@ -171,7 +211,13 @@ public class ContentService {
         contentRepository.deleteAll(childContents);
     }
 
+    /**
+     * This method deletes all content for given userId*
+     * @param userId
+     * @throws Exception
+     */
     public void deleteContentForUser(String userId) throws Exception {
+        log.info("delete content for userId {}", userId);
         List<Content> contentList = contentRepository.findByUserId(userId);
         for(Content content : contentList){
             deleteFetchedContent(content);
@@ -232,6 +278,14 @@ public class ContentService {
         }
         s.append("ago");
         return s.toString();
+    }
+
+    /*Logic:
+    This method gives first n level comments where here n=size and also
+     up to l level horizontal comments for each first n vertical level comments */
+    public List<ContentResponseModel> getHierarchyContent(String parentContentId, Integer level, Integer page, Integer size) {
+        List<Object> objectList = contentRepository.findContentHierarchy(parentContentId, level, page, size);
+        return null;
     }
 
 }

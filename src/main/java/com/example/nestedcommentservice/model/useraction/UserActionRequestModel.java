@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 public class UserActionRequestModel {
 
     private ContentType contentType;
-    private String contentEntityId;
+    private String contentId;
     private Action action;
     private String userId;
 

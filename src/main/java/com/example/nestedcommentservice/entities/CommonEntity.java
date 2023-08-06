@@ -2,18 +2,18 @@ package com.example.nestedcommentservice.entities;
 
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.Id;
 
 import java.util.Date;
+
+/**
+ * CommonEntity - This is the common property class *
+ */
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @ToString
 public class CommonEntity {
-
-    @Id
-    private String id;
 
     @CreatedDate
     protected Date lastUpdatedOn;

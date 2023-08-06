@@ -42,15 +42,15 @@ public class UserActionServiceTests {
 
     @Test
     public void testAddUserAction_CreateNewUserAction() throws Exception {
-        when(userActionRepository.findByUserIdAndContentEntityId(anyString(), anyString())).thenReturn(null);
+        when(userActionRepository.findByUserIdAndContentId(anyString(), anyString())).thenReturn(null);
         UserActionRequestModel requestModel = UserActionRequestModel.builder().action(Action.LIKE)
-                .userId("userId1").contentEntityId("contentId1").contentType(ContentType.COMMENT).build();
+                .userId("userId1").contentId("contentId1").contentType(ContentType.COMMENT).build();
         when(userService.findUser("userId1")).thenReturn(User.builder().userName("ishit").build());
         when(contentService.findContent("contentId1")).thenReturn(true);
         UserActionResponseModel responseModel = userActionService.addUserAction(requestModel);
         assertNotNull(responseModel);
         assertEquals(requestModel.getUserId(), responseModel.getUserId());
-        assertEquals(requestModel.getContentEntityId(), responseModel.getActionEntityId());
+        assertEquals(requestModel.getContentId(), responseModel.getActionEntityId());
         assertEquals(requestModel.getAction(), responseModel.getAction());
         verify(userActionRepository, times(1)).save(any(UserAction.class));
     }
@@ -58,15 +58,15 @@ public class UserActionServiceTests {
     @Test
     public void testAddUserAction_UpdateExistingUserAction() throws Exception {
         UserAction existingUserAction = new UserAction(ContentType.COMMENT, "contentId1", Action.DISLIKE, "userId1");
-        when(userActionRepository.findByUserIdAndContentEntityId(anyString(), anyString())).thenReturn(existingUserAction);
+        when(userActionRepository.findByUserIdAndContentId(anyString(), anyString())).thenReturn(existingUserAction);
         when(userService.findUser("userId1")).thenReturn(User.builder().userName("ishit").build());
         when(contentService.findContent("contentId1")).thenReturn(true);
         UserActionRequestModel requestModel = UserActionRequestModel.builder().action(Action.LIKE)
-                .userId("userId1").contentEntityId("contentId1").build();
+                .userId("userId1").contentId("contentId1").build();
         UserActionResponseModel responseModel = userActionService.addUserAction(requestModel);
         assertNotNull(responseModel);
         assertEquals(requestModel.getUserId(), responseModel.getUserId());
-        assertEquals(requestModel.getContentEntityId(), responseModel.getActionEntityId());
+        assertEquals(requestModel.getContentId(), responseModel.getActionEntityId());
         assertEquals(requestModel.getAction(), responseModel.getAction());
         verify(userActionRepository, times(1)).save(any(UserAction.class));
     }
@@ -76,7 +76,7 @@ public class UserActionServiceTests {
         doThrow(new CustomException(ErrorCode.BAD_REQUEST, UNABLE_TO_FIND_USER))
                 .when(userService).findUser(anyString());
         UserActionRequestModel requestModel = UserActionRequestModel.builder().action(Action.LIKE)
-                .userId("userId1").contentEntityId("contentId1").build();
+                .userId("userId1").contentId("contentId1").build();
         try {
             userActionService.addUserAction(requestModel);
         } catch (CustomException e) {
@@ -90,7 +90,7 @@ public class UserActionServiceTests {
                 new UserAction(ContentType.COMMENT, "contentId1", Action.LIKE, "userId1"),
                 new UserAction(ContentType.COMMENT, "contentId1", Action.DISLIKE, "userId2")
         );
-        when(userActionRepository.findByContentEntityId(anyString())).thenReturn(userActionList);
+        when(userActionRepository.findByContentId(anyString())).thenReturn(userActionList);
         String contentId = "contentId1";
         userActionService.deleteUserActionsForContent(contentId);
         verify(userActionRepository, times(1)).deleteAll(eq(userActionList));

@@ -2,6 +2,7 @@ package com.example.nestedcommentservice.repository.impl;
 
 import com.example.nestedcommentservice.entities.Content;
 import com.example.nestedcommentservice.repository.ContentRepositoryCustom;
+import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.*;
@@ -16,6 +17,7 @@ import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 
 @Repository
+@Slf4j
 public class ContentRepositoryImpl implements ContentRepositoryCustom {
 
     private final MongoTemplate mongoTemplate;
@@ -30,6 +32,7 @@ public class ContentRepositoryImpl implements ContentRepositoryCustom {
                 match(where("parentContentId").in(parentContentIds)),
                 group("parentContentId").count().as("childCount")
         );
+        log.info("aggregation query for getting getChildContentCounts : {}", aggregation);
         AggregationResults<Object> result = mongoTemplate.aggregate(aggregation, Content.class, Object.class);
         Map<String, Integer> childContentCountMap = new HashMap<>();
         for (Object obj : result.getMappedResults()) {
