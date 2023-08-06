@@ -56,8 +56,8 @@ public class ContentService {
         try {
             checkValidation(contentRequestModel);
             Content currentContent = contentRepository.findById(contentRequestModel.getContentId()).orElse(null);
-            if (Objects.isNull(currentContent)) {
-                throw new CustomException(ErrorCode.BAD_REQUEST, UNABLE_TO_FIND_CONTENT);
+            if (Objects.isNull(currentContent) || !currentContent.getUserId().equals(contentRequestModel.getUserId())) {
+                throw new CustomException(ErrorCode.BAD_REQUEST, UNABLE_TO_UPDATE_CONTENT);
             }
             Content updatedContent = buildContent(contentRequestModel, Boolean.TRUE, currentContent);
             updatedContent = contentRepository.save(updatedContent);
