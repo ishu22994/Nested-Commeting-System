@@ -2,7 +2,7 @@ package com.example.nestedcommentservice.service;
 
 import com.example.nestedcommentservice.entities.Content;
 import com.example.nestedcommentservice.enums.Action;
-import com.example.nestedcommentservice.enums.ContentEntity;
+import com.example.nestedcommentservice.enums.ContentType;
 import com.example.nestedcommentservice.error.CustomException;
 import com.example.nestedcommentservice.model.content.ContentRequestModel;
 import com.example.nestedcommentservice.repository.ContentRepository;
@@ -72,7 +72,7 @@ public class ContentServiceTests {
     @Test
     public void testDeleteContentForUser() {
         String userId = "userId1";
-        List<Content> contentList = Arrays.asList(Content.builder().contentEntity(ContentEntity.COMMENT).userId(userId)
+        List<Content> contentList = Arrays.asList(Content.builder().contentType(ContentType.COMMENT).userId(userId)
                 .level(1).parentContentId("NA").contentText("ii").build());
         when(contentRepository.findByUserId(anyString())).thenReturn(contentList);
         assertDoesNotThrow(() -> contentService.deleteContentForUser(userId));

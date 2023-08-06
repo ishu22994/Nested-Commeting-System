@@ -1,7 +1,7 @@
 package com.example.nestedcommentservice.entities;
 
 import com.example.nestedcommentservice.enums.Action;
-import com.example.nestedcommentservice.enums.ContentEntity;
+import com.example.nestedcommentservice.enums.ContentType;
 import lombok.*;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -14,7 +14,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class UserAction extends CommonEntity {
 
     @NonNull
-    private ContentEntity contentEntity;
+    private ContentType contentType;
 
     @NonNull
     private String contentEntityId;
@@ -25,9 +25,9 @@ public class UserAction extends CommonEntity {
     @NonNull
     private String userId;
 
-    public UserAction(@NonNull ContentEntity contentEntity, @NonNull String contentEntityId,
+    public UserAction(@NonNull ContentType contentType, @NonNull String contentEntityId,
                       @NonNull Action action, @NonNull String userId) {
-        this.contentEntity = contentEntity;
+        this.contentType = contentType;
         this.contentEntityId = contentEntityId;
         this.action = action;
         this.userId = userId;

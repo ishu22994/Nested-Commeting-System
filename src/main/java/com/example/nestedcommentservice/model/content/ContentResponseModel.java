@@ -1,6 +1,6 @@
 package com.example.nestedcommentservice.model.content;
 
-import com.example.nestedcommentservice.enums.ContentEntity;
+import com.example.nestedcommentservice.enums.ContentType;
 import lombok.*;
 
 @Builder
@@ -16,7 +16,7 @@ public class ContentResponseModel {
     private Integer level;
     private Integer childContentCount;
     private String parentContentId;
-    private ContentEntity contentEntity;
+    private ContentType contentType;
     private String createdOn;
     private String lastUpdatedOn;
 

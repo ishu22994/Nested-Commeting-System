@@ -2,7 +2,7 @@ package com.example.nestedcommentservice.enums;
 
 import lombok.Getter;
 
-public enum ContentEntity {
+public enum ContentType {
 
     POST("POST"),
     COMMENT("COMMENT");
@@ -10,7 +10,7 @@ public enum ContentEntity {
     @Getter
     String value;
 
-    ContentEntity(String value) {
+    ContentType(String value) {
         this.value = value;
     }
 

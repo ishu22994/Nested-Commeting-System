@@ -1,6 +1,6 @@
 package com.example.nestedcommentservice.model.content;
 
-import com.example.nestedcommentservice.enums.ContentEntity;
+import com.example.nestedcommentservice.enums.ContentType;
 import lombok.*;
 
 import static com.example.nestedcommentservice.util.Constants.NA;
@@ -20,7 +20,7 @@ public class ContentRequestModel {
     private String contentText;
 
     @NonNull
-    private ContentEntity contentEntity;
+    private ContentType contentType;
 
     @Builder.Default
     private Integer level = 1;

@@ -51,7 +51,7 @@ public class UserActionService {
                     userActionRequestModel.getContentEntityId());
             if (Objects.isNull(userAction)) {
                 getUserActionCount(null, userActionRequestModel.getAction(), likeCount, disLikeCount);
-                userAction = new UserAction(userActionRequestModel.getContentEntity(), userActionRequestModel.getContentEntityId(),
+                userAction = new UserAction(userActionRequestModel.getContentType(), userActionRequestModel.getContentEntityId(),
                         userActionRequestModel.getAction(), userActionRequestModel.getUserId());
                 userAction.prePersist();
             } else {
@@ -69,7 +69,7 @@ public class UserActionService {
             }
             updateCount(userActionRequestModel);
             return UserActionResponseModel.builder().action(userActionRequestModel.getAction()).
-                    contentEntity(userActionRequestModel.getContentEntity()).userId(userActionRequestModel.getUserId()).
+                    contentType(userActionRequestModel.getContentType()).userId(userActionRequestModel.getUserId()).
                     actionEntityId(userActionRequestModel.getContentEntityId()).build();
         } catch (Exception e) {
             throw new CustomException(ErrorCode.BAD_REQUEST, e.getMessage());
