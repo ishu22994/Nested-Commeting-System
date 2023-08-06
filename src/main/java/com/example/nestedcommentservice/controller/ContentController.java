@@ -57,9 +57,9 @@ public class ContentController {
     }
 
     @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
-    public ResponseEntity deleteContent(@RequestParam String contentId) throws Exception {
+    public ResponseEntity deleteContent(@RequestParam String contentId, @RequestParam String userId) throws Exception {
         try {
-            return new ResponseEntity<>(contentService.deleteContent(contentId), HttpStatus.OK);
+            return new ResponseEntity<>(contentService.deleteContent(contentId, userId), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }

@@ -28,6 +28,9 @@ dependencies {
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	// Use a more recent version of Spring Data MongoDB
+	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb:2.5.4'
 }
 
 tasks.named('test') {

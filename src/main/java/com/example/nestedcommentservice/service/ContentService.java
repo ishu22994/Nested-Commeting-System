@@ -1,6 +1,7 @@
 package com.example.nestedcommentservice.service;
 
 import com.example.nestedcommentservice.entities.Content;
+import com.example.nestedcommentservice.entities.User;
 import com.example.nestedcommentservice.enums.Action;
 import com.example.nestedcommentservice.error.CustomException;
 import com.example.nestedcommentservice.error.ErrorCode;
@@ -144,9 +145,13 @@ public class ContentService {
     /*Logic:
     if content is deleted
      1. related child content also removed 2. related user-action removed */
-    public Boolean deleteContent(String contentId) {
+    public Boolean deleteContent(String contentId, String userId) {
         try {
             Content content = contentRepository.findById(contentId).orElse(null);
+            User user = userService.findUser(userId);
+            if(Objects.isNull(content) || !user.getId().equals(content.getUserId())){
+                throw new CustomException(ErrorCode.INVALID, UNABLE_TO_DELETE_CONTENT);
+            }
             deleteFetchedContent(content);
             return true;
         } catch (Exception e) {
@@ -191,7 +196,8 @@ public class ContentService {
     }
 
     private void checkValidation(ContentRequestModel contentRequestModel) {
-        if (!userService.findUser(contentRequestModel.getUserId())) {
+        User user = userService.findUser(contentRequestModel.getUserId());
+        if (Objects.isNull(user)) {
             throw new CustomException(ErrorCode.BAD_REQUEST, UNABLE_TO_FIND_USER);
         }
         if (!NA.equals(contentRequestModel.getParentContentId())) {

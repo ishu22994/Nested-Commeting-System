@@ -51,7 +51,7 @@ public class ContentServiceTests {
     @Test
     public void testAddContent_InvalidUserOrParentContent() {
         ContentRequestModel requestModel = new ContentRequestModel();
-        when(userService.findUser(anyString())).thenReturn(false);
+        when(userService.findUser(anyString())).thenReturn(null);
         assertThrows(CustomException.class, () -> {
             contentService.addContent(requestModel);
         });
@@ -62,7 +62,7 @@ public class ContentServiceTests {
         Content existingContent = new Content();
         when(contentRepository.findById(anyString())).thenReturn(Optional.of(existingContent));
         String contentId = "contentId1";
-        Boolean result = contentService.deleteContent(contentId);
+        Boolean result = contentService.deleteContent(contentId, "userId");
         assertTrue(result);
         verify(contentRepository, times(1)).findById(anyString());
         verify(userActionService, times(1)).deleteUserActionsForContent(null);
@@ -83,7 +83,7 @@ public class ContentServiceTests {
     @Test
     public void testAddContent_InvalidUserAndParentContent() {
         ContentRequestModel requestModel = new ContentRequestModel();
-        when(userService.findUser(anyString())).thenReturn(false);
+        when(userService.findUser(anyString())).thenReturn(null);
         when(contentRepository.findById(anyString())).thenReturn(Optional.empty());
         assertThrows(CustomException.class, () -> {
             contentService.addContent(requestModel);
@@ -121,7 +121,7 @@ public class ContentServiceTests {
     public void testDeleteContent_NonExistingContent() {
         when(contentRepository.findById(anyString())).thenReturn(Optional.empty());
         assertThrows(CustomException.class, () -> {
-            contentService.deleteContent("contentId1");
+            contentService.deleteContent("contentId1","userId");
         });
     }
 

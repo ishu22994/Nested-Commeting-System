@@ -1,5 +1,6 @@
 package com.example.nestedcommentservice.service;
 
+import com.example.nestedcommentservice.entities.User;
 import com.example.nestedcommentservice.entities.UserAction;
 import com.example.nestedcommentservice.enums.Action;
 import com.example.nestedcommentservice.enums.ContentType;
@@ -44,7 +45,7 @@ public class UserActionServiceTests {
         when(userActionRepository.findByUserIdAndContentEntityId(anyString(), anyString())).thenReturn(null);
         UserActionRequestModel requestModel = UserActionRequestModel.builder().action(Action.LIKE)
                 .userId("userId1").contentEntityId("contentId1").contentType(ContentType.COMMENT).build();
-        when(userService.findUser("userId1")).thenReturn(true);
+        when(userService.findUser("userId1")).thenReturn(User.builder().userName("ishit").build());
         when(contentService.findContent("contentId1")).thenReturn(true);
         UserActionResponseModel responseModel = userActionService.addUserAction(requestModel);
         assertNotNull(responseModel);
@@ -58,7 +59,7 @@ public class UserActionServiceTests {
     public void testAddUserAction_UpdateExistingUserAction() throws Exception {
         UserAction existingUserAction = new UserAction(ContentType.COMMENT, "contentId1", Action.DISLIKE, "userId1");
         when(userActionRepository.findByUserIdAndContentEntityId(anyString(), anyString())).thenReturn(existingUserAction);
-        when(userService.findUser("userId1")).thenReturn(true);
+        when(userService.findUser("userId1")).thenReturn(User.builder().userName("ishit").build());
         when(contentService.findContent("contentId1")).thenReturn(true);
         UserActionRequestModel requestModel = UserActionRequestModel.builder().action(Action.LIKE)
                 .userId("userId1").contentEntityId("contentId1").build();

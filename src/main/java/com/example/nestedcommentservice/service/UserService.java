@@ -74,12 +74,12 @@ public class UserService {
         }
     }
 
-    public Boolean findUser(String userId) {
+    public User findUser(String userId) {
         User user = userRepository.findById(userId).orElse(null);
         if (Objects.isNull(user)) {
-            return Boolean.FALSE;
+            return null;
         }
-        return Boolean.TRUE;
+        return user;
     }
 
     public List<String> getUsersByIds(List<String> userIds) {

@@ -1,5 +1,6 @@
 package com.example.nestedcommentservice.service;
 
+import com.example.nestedcommentservice.entities.User;
 import com.example.nestedcommentservice.entities.UserAction;
 import com.example.nestedcommentservice.enums.Action;
 import com.example.nestedcommentservice.error.CustomException;
@@ -103,7 +104,8 @@ public class UserActionService {
     }
 
     private void checkValidations(UserActionRequestModel userActionRequestModel) {
-        if (!userService.findUser(userActionRequestModel.getUserId())) {
+        User user = userService.findUser(userActionRequestModel.getUserId());
+        if (Objects.isNull(user)) {
             throw new CustomException(ErrorCode.BAD_REQUEST, UNABLE_TO_FIND_USER);
         }
         if (!contentService.findContent(userActionRequestModel.getContentEntityId())) {
