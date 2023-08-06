@@ -108,6 +108,7 @@ public class ContentService {
     This method gives first n level comments where here n=size and also
      up to l level horizontal comments for each first n vertical level comments */
     public List<ContentResponseModel> getHierarchyContent(String parentContentId, Integer level, Integer page, Integer size) {
+        List<Object> objectList = contentRepository.findContentHierarchy(parentContentId, level, page, size);
         return null;
     }
 
