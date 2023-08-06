@@ -85,7 +85,6 @@ public class ContentService {
                 .map(Content::getId)
                 .collect(Collectors.toList());
         List<Object[]> childContentCounts = contentRepository.getChildContentCounts(contentIds);
-
         Map<String, Integer> childContentCountMap = new HashMap<>();
         for (Object[] obj : childContentCounts) {
             String parentId = (String) obj[0];
