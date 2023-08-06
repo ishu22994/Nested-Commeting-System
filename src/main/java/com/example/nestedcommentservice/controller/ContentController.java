@@ -16,28 +16,6 @@ public class ContentController {
     @Autowired
     private ContentService contentService;
 
-    @RequestMapping(value = "/fetch", method = RequestMethod.GET)
-    public ResponseEntity getContent(@RequestParam @NonNull String parentContentId,
-                                     @RequestParam(defaultValue = "0") Integer page,
-                                     @RequestParam(defaultValue = "5") Integer size) throws Exception {
-        try {
-            return new ResponseEntity<>(contentService.getContent(parentContentId, page, size), HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    @RequestMapping(value = "/fetch/hierarchy", method = RequestMethod.GET)
-    public ResponseEntity getHierarchyContent(@RequestParam @NonNull String parentContentId, @RequestParam @NonNull Integer level,
-                                              @RequestParam(defaultValue = "0") Integer page,
-                                              @RequestParam(defaultValue = "5") Integer size) throws Exception {
-        try {
-            return new ResponseEntity<>(contentService.getHierarchyContent(parentContentId, level, page, size), HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
-    }
-
     @RequestMapping(value = "/add", method = RequestMethod.POST, produces = "application/json")
     public ResponseEntity addContent(@RequestBody ContentRequestModel contentRequestModel) throws Exception {
         try {
@@ -60,6 +38,28 @@ public class ContentController {
     public ResponseEntity deleteContent(@RequestParam String contentId, @RequestParam String userId) throws Exception {
         try {
             return new ResponseEntity<>(contentService.deleteContent(contentId, userId), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @RequestMapping(value = "/fetch", method = RequestMethod.GET)
+    public ResponseEntity getContent(@RequestParam @NonNull String parentContentId,
+                                     @RequestParam(defaultValue = "0") Integer page,
+                                     @RequestParam(defaultValue = "5") Integer size) throws Exception {
+        try {
+            return new ResponseEntity<>(contentService.getContent(parentContentId, page, size), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @RequestMapping(value = "/fetch/hierarchy", method = RequestMethod.GET)
+    public ResponseEntity getHierarchyContent(@RequestParam @NonNull String parentContentId, @RequestParam @NonNull Integer level,
+                                              @RequestParam(defaultValue = "0") Integer page,
+                                              @RequestParam(defaultValue = "5") Integer size) throws Exception {
+        try {
+            return new ResponseEntity<>(contentService.getHierarchyContent(parentContentId, level, page, size), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }

@@ -214,6 +214,10 @@ public class ContentService {
         deleteRecursive(content);
     }
 
+    /**
+     * This method deletes all child contents for given content*
+     * @param content
+     */
     private void deleteRecursive(Content content) {
         List<Content> childContents = contentRepository.findByParentContentId(content.getId());
         for (Content childContent : childContents) {

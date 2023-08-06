@@ -158,13 +158,13 @@ public class UserActionService {
     }
 
     /**
-     * This method is used to fetch all userNames for given action and contentId*
+     * This method is used to fetch all userIds for given action and contentId*
      * @param contentId
      * @param action
      * @return
      */
     public List<String> getUsersByAction(String contentId, Action action) {
-        log.info("fetching all user names for given contentId {} and action {} ", contentId, action);
+        log.info("fetching all user ids for given contentId {} and action {} ", contentId, action);
         List<UserAction> userActionList = userActionRepository.findByContentIdAndAction(contentId, action);
         return userActionList.stream().map(UserAction::getUserId).collect(Collectors.toList());
     }
