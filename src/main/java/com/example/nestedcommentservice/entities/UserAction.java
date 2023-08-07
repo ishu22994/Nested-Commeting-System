@@ -24,9 +24,6 @@ public class UserAction {
     private String id;
 
     @NonNull
-    private ContentType contentType;
-
-    @NonNull
     private String contentId;
 
     @NonNull
@@ -46,9 +43,7 @@ public class UserAction {
         lastUpdatedOn = new Date();
     }
 
-    public UserAction(@NonNull ContentType contentType, @NonNull String contentId,
-                      @NonNull Action action, @NonNull String userId) {
-        this.contentType = contentType;
+    public UserAction(@NonNull String contentId, @NonNull Action action, @NonNull String userId) {
         this.contentId = contentId;
         this.action = action;
         this.userId = userId;

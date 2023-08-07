@@ -3,7 +3,6 @@ package com.example.nestedcommentservice.service;
 import com.example.nestedcommentservice.entities.User;
 import com.example.nestedcommentservice.entities.UserAction;
 import com.example.nestedcommentservice.enums.Action;
-import com.example.nestedcommentservice.enums.ContentType;
 import com.example.nestedcommentservice.error.CustomException;
 import com.example.nestedcommentservice.error.ErrorCode;
 import com.example.nestedcommentservice.model.useraction.UserActionRequestModel;
@@ -44,7 +43,7 @@ public class UserActionServiceTests {
     public void testAddUserAction_CreateNewUserAction() throws Exception {
         when(userActionRepository.findByUserIdAndContentId(anyString(), anyString())).thenReturn(null);
         UserActionRequestModel requestModel = UserActionRequestModel.builder().action(Action.LIKE)
-                .userId("userId1").contentId("contentId1").contentType(ContentType.COMMENT).build();
+                .userId("userId1").contentId("contentId1").build();
         when(userService.findUser("userId1")).thenReturn(User.builder().userName("ishit").build());
         when(contentService.findContent("contentId1")).thenReturn(true);
         UserActionResponseModel responseModel = userActionService.addUserAction(requestModel);
@@ -57,7 +56,7 @@ public class UserActionServiceTests {
 
     @Test
     public void testAddUserAction_UpdateExistingUserAction() throws Exception {
-        UserAction existingUserAction = new UserAction(ContentType.COMMENT, "contentId1", Action.DISLIKE, "userId1");
+        UserAction existingUserAction = new UserAction("contentId1", Action.DISLIKE, "userId1");
         when(userActionRepository.findByUserIdAndContentId(anyString(), anyString())).thenReturn(existingUserAction);
         when(userService.findUser("userId1")).thenReturn(User.builder().userName("ishit").build());
         when(contentService.findContent("contentId1")).thenReturn(true);
@@ -87,8 +86,8 @@ public class UserActionServiceTests {
     @Test
     public void testDeleteUserActionsForContent() {
         List<UserAction> userActionList = Arrays.asList(
-                new UserAction(ContentType.COMMENT, "contentId1", Action.LIKE, "userId1"),
-                new UserAction(ContentType.COMMENT, "contentId1", Action.DISLIKE, "userId2")
+                new UserAction("contentId1", Action.LIKE, "userId1"),
+                new UserAction("contentId1", Action.DISLIKE, "userId2")
         );
         when(userActionRepository.findByContentId(anyString())).thenReturn(userActionList);
         String contentId = "contentId1";
@@ -99,9 +98,9 @@ public class UserActionServiceTests {
     @Test
     public void testDeleteUserActionsForUser() {
         List<UserAction> userActionList = Arrays.asList(
-                new UserAction(ContentType.COMMENT, "contentId1", Action.LIKE, "userId1"),
-                new UserAction(ContentType.COMMENT, "contentId2", Action.DISLIKE, "userId1"),
-                new UserAction(ContentType.COMMENT, "contentId1", Action.DISLIKE, "userId2")
+                new UserAction("contentId1", Action.LIKE, "userId1"),
+                new UserAction("contentId2", Action.DISLIKE, "userId1"),
+                new UserAction("contentId1", Action.DISLIKE, "userId2")
         );
         when(userActionRepository.findByUserId(anyString())).thenReturn(userActionList);
         String userId = "userId1";
