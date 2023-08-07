@@ -2,8 +2,11 @@ package com.example.nestedcommentservice.entities;
 
 import com.example.nestedcommentservice.enums.ContentType;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.util.Date;
 
 /**
  * Content - This is the entity class for content - content can be post / comment based on contentType *
@@ -14,9 +17,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @NoArgsConstructor
 @Data
 @Document(collection = "content")
-@ToString(callSuper = true)
-@EqualsAndHashCode(callSuper=false)
-public class Content extends CommonEntity{
+@ToString()
+@EqualsAndHashCode()
+public class Content {
 
     @Id
     private String id;
@@ -41,5 +44,16 @@ public class Content extends CommonEntity{
 
     @NonNull
     private String contentText;
+
+    @CreatedDate
+    private Date lastUpdatedOn;
+
+    @CreatedDate
+    private Date createdOn;
+
+    public void prePersist() {
+        createdOn = new Date();
+        lastUpdatedOn = new Date();
+    }
 
 }
