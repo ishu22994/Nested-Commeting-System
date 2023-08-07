@@ -53,8 +53,8 @@ public class ContentService {
             return ContentResponseModel.builder().contentId(content.getId())
                     .createdOn(getTimeDifferenceInString(content.getCreatedOn().getTime(), System.currentTimeMillis()))
                     .contentText(content.getContentText()).parentContentId(content.getParentContentId())
-                    .contentType(content.getContentType())
-                    .level(content.getLevel()).userId(content.getUserId()).build();
+                    .contentType(content.getContentType()).disLikeCount(content.getDisLikeCount())
+                    .likeCount(content.getLikeCount()).level(content.getLevel()).userId(content.getUserId()).build();
         } catch (Exception e) {
             log.info("error while adding a content for contentRequestModel {} ", contentRequestModel);
             throw new CustomException(ErrorCode.BAD_REQUEST, e.getMessage());
