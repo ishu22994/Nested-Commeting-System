@@ -196,6 +196,7 @@ public class ContentService {
                 throw new CustomException(ErrorCode.INVALID, UNABLE_TO_DELETE_CONTENT);
             }
             deleteFetchedContent(content);
+            userActionService.deleteUserActionsForContent(content.getId());
             return true;
         } catch (Exception e) {
             log.info("error in deleting content for contentId {}, userId {}", contentId, userId);
@@ -222,6 +223,7 @@ public class ContentService {
         List<Content> childContents = contentRepository.findByParentContentId(content.getId());
         for (Content childContent : childContents) {
             deleteRecursive(childContent);
+            /*TODO : Optimisation: We can gather list of contentIds whose user-actions needs to be deleted and then delete in once single call in usr-action service */
             userActionService.deleteUserActionsForContent(childContent.getId());
         }
         contentRepository.delete(content);

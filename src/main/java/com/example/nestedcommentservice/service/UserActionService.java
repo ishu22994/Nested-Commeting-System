@@ -152,7 +152,14 @@ public class UserActionService {
                 likeCount = 0;
                 disLikeCount = -1;
             }
-            contentService.updateUserActionCount(likeCount, disLikeCount, userAction.getContentId());
+            try {
+                contentService.updateUserActionCount(likeCount, disLikeCount, userAction.getContentId());
+            }catch (CustomException e){
+                if(!e.getMessage().equals(UNABLE_TO_FIND_CONTENT)){
+                    log.error("error in deleting user-action for userId {}", userId);
+                    throw new CustomException(ErrorCode.BAD_REQUEST, UNABLE_TO_DELETE_ACTION);
+                }
+            }
         }
         userActionRepository.deleteAll(userActionList);
     }
