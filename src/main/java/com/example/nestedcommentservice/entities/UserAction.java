@@ -1,7 +1,6 @@
 package com.example.nestedcommentservice.entities;
 
 import com.example.nestedcommentservice.enums.Action;
-import com.example.nestedcommentservice.enums.ContentType;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
